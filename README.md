@@ -1,3 +1,12 @@
+Welcome to my repo. This is a record of my step by step work on the 
+MIT 6.S081 2020 Course, based on the original MIT repository.
+My first Lab, "util", is on another repository. 
+"https://github.com/cxMoonGlade/xv6_labs_learning_2020.git"
+Sorry for any inconvenience this may cause.
+
+
+Below is the original MIT 6.S081 2020 repo readme file
+-----------------------------------------------------------------------
 xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
 Version 6 (v6).  xv6 loosely follows the structure and style of v6,
 but is implemented for a modern RISC-V multiprocessor using ANSI C.
