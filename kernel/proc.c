@@ -114,12 +114,37 @@ found:
   }
 
   // An empty user page table.
-  p->pagetable = proc_pagetable(p);
+  p->pagetable = proc_pagetable(p); 
+  // proc_pagetable(proc *)Create a user page table for a given process,
+  // with no user memory, but with trampoline pages.
   if(p->pagetable == 0){
     freeproc(p);
     release(&p->lock);
     return 0;
   }
+
+  // Create a kernel page copy in user process
+  p-> kernel_pgtbl = prok_pagetable(p);
+  if (p-> kernel_pgtbl == 0){
+    freeproc(p);
+    release(&p->lock);
+    return 0;
+  }
+
+
+  // set up kernel stack for per-process kernel pagetable
+  uint64 va = KSTACK((int)(p - proc)); 
+  /* from memlayout.h, (TRAMPOLINE - ((p)+1)* 2*PGSIZE) */
+  /* see similar usage procinit() function */
+  if (mappages(p->kernel_pgtbl, va, PGSIZE, kvmpa(va), PTE_R | PTE_W) != 0)
+    panic("proc_mapStack");
+  // set up new context to start executing at forkret,
+  // which returns to user space
+  memset(&p-> context, 0, sizeof(p-> context));
+  p->context.ra = (uint64)forkret;
+  p->context.sp = p -> kstack + PGSIZE;
+
+  return p;
 
   // Set up new context to start executing at forkret,
   // which returns to user space.
@@ -194,6 +219,10 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
   uvmunmap(pagetable, TRAPFRAME, 1, 0);
   uvmfree(pagetable, sz);
 }
+
+// create a user kernel pagetable
+// return the address of it
+pagetable_t 
 
 // a user program that calls exec("/init")
 // od -t xC initcode
