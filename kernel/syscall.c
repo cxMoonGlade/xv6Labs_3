@@ -152,18 +152,16 @@ syscall(void)
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
 
     // save the syscall return value to a2 register
-    p-> trapframe -> a2 = syscalls[num]();
+    p-> trapframe -> a0 = syscalls[num]();
 
     int trace_mask = p -> trace_mask; 
     if ((trace_mask >> num) & 0b01 ) {
 
       // format : 3: syscall read -> 1023
       // format : <pid>: syscall <syscall name> -> <sycall return value>
-      printf("%d: syscall %s -> %d\n", p -> pid, syscalls[num], p->trapframe->a2);
+      printf("%d: syscall %s -> %d\n", p -> pid, syscalls[num], p->trapframe->a0);
     }
 
-
-    p->trapframe->a0 = syscalls[num]();
   } else {
     printf("%d %s: unknown sys call %d\n",
             p->pid, p->name, num);
