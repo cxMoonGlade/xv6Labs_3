@@ -95,3 +95,25 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// print the trace information
+uint64
+sys_trace(void)
+{
+  uint n;
+  if (argint(0, &n) < 0)
+    return -1;
+  printf("sys_trace: n is %d\n", n);
+  return 0;
+}
+
+// print the system information
+uint64
+sys_sysinfo(void)
+{
+  uint n;
+  if (argint(0, &n) < 0)
+    return -1;
+  printf("sys_sysinfo: n is %d\n", n);
+  return 0;
+}
