@@ -107,6 +107,7 @@ extern uint64 sys_uptime(void);
 extern uint64 sys_trace(void); // Part A for Lab2
 extern uint64 sys_sysinfo(void); // Part B for Lab2
 
+// returns the value of the specified syscall
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,
@@ -144,12 +145,24 @@ syscall_funs[] = {
 void
 syscall(void)
 {
-  int num;
+  int num; // the bit count to identify the syscall index
   struct proc *p = myproc();
 
-  num = p->trapframe->a7;
+  num = p->trapframe->a7; 
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
-    printf("%s is called!\n", syscall_funs[num - 1]);
+
+    // save the syscall return value to a2 register
+    p-> trapframe -> a2 = syscalls[num]();
+
+    int trace_mask = p -> trace_mask; 
+    if ((trace_mask >> num) & 0b01 ) {
+
+      // format : 3: syscall read -> 1023
+      // format : <pid>: syscall <syscall name> -> <sycall return value>
+      printf("%d: syscall %s -> %d\n", p -> pid, syscalls[num], p->trapframe->a2);
+    }
+
+
     p->trapframe->a0 = syscalls[num]();
   } else {
     printf("%d %s: unknown sys call %d\n",
