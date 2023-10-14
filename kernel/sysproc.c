@@ -100,10 +100,10 @@ sys_uptime(void)
 uint64
 sys_trace(void)
 {
-  uint n;
-  if (argint(0, &n) < 0)
+  int mask;
+  if (argint(0, &mask) < 0)
     return -1;
-  printf("sys_trace: n is %d\n", n);
+  printf("sys_trace: mask is %d\n", mask);
   return 0;
 }
 
