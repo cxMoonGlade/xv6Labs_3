@@ -116,6 +116,12 @@ exec(char *path, char **argv)
   p->trapframe->sp = sp; // initial stack pointer
   proc_freepagetable(oldpagetable, oldsz);
 
+
+  // now all printable items are printed, then copy mappings from user pgtbl to kernel pgtbl
+  copy_mappings(p->pagetable, p->kernel_pgtbl, 0, p->sz);
+
+  if (p -> pid == 1)
+    vmprint(p->pagetable); //only the main to print
   return argc; // this ends up in a0, the first argument to main(argc, argv)
 
  bad:
