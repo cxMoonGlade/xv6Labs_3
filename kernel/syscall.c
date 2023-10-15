@@ -159,7 +159,7 @@ syscall(void)
 
       // format : 3: syscall read -> 1023
       // format : <pid>: syscall <syscall name> -> <sycall return value>
-      printf("%d: syscall %s -> %d\n", p -> pid, syscalls[num], p->trapframe->a0);
+      printf("%d: syscall %s -> %d\n", p -> pid, syscall_funs[num - 1], p->trapframe->a0);
     }
 
   } else {
