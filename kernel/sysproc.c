@@ -111,7 +111,7 @@ sys_trace(void)
 uint64
 sys_sysinfo(void)
 {
-  uint n;
+  int n;
   if (argint(0, &n) < 0)
     return -1;
   printf("sys_sysinfo: n is %d\n", n);
