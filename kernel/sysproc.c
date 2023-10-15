@@ -98,12 +98,13 @@ sys_uptime(void)
 
 // print the trace information
 uint64
-sys_trace(void)
+sys_trace() 
 {
   int mask;
-  if (argint(0, &mask) < 0)
+
+  if(argint(0, &mask) < 0)
     return -1;
-  printf("sys_trace: mask is %d\n", mask);
+  myproc()-> trace_mask = mask;
   return 0;
 }
 
@@ -111,9 +112,19 @@ sys_trace(void)
 uint64
 sys_sysinfo(void)
 {
-  int n;
-  if (argint(0, &n) < 0)
+  uint64 ptr, nfreemem, _nproc; // ptr of sysinfo in user space
+  struct proc *p = myproc();
+
+  if(argaddr(0, &ptr) < 0)
     return -1;
-  printf("sys_sysinfo: n is %d\n", n);
+  
+  // collect sysinfo->freemem(uint64) and sysinfo->nproc(uint64)
+  nfreemem = freemem();
+  _nproc   = nproc();
+
+  if(copyout(p->pagetable, ptr, (char *)&nfreemem, sizeof(nfreemem)) < 0 || 
+     copyout(p->pagetable, ptr + sizeof(nfreemem), (char *)&_nproc, sizeof(_nproc)) < 0) {
+    return -1;
+  }
   return 0;
 }
