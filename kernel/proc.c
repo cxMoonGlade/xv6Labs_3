@@ -223,6 +223,30 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
 // create a user kernel pagetable
 // return the address of it
 pagetable_t 
+pork_pagetable(struct proc *proc)
+{
+    extern char etext[];
+    pagetable_t ukpgtbl = uvmcreate();
+
+    if (ukpgtbl == 0) return 0;
+    if (mappages(ukpgtbl, UART0, PGSIZE,  UART0, PTE_R | PTE_W) != 0) 
+        panic("prok_pagetable:UART0");
+    if (mappages(ukpgtbl, VIRTIO0, PGSIZE, VIRTIO0, PTE_R | PTE_W) != 0)
+        panic ("prok_pagetable:VIRTIO0");
+    if (mappages(ukpgtbl, PLIC, 0x400000, PLIC, PTE_R | PTE_W) != 0)
+        panic ("prok_pagetable:PLIC");
+    if (mappages(ukpgtbl, KERNBASE, (uint64)etext - KERNBASE, KERNBASE, PTE_R | PTE_X) != 0)
+        panic ("prok_pagetable:KERNELBASE");
+    if (mappages(ukpgtbl, (uint64)etext, PHYSTOP - (uint64)etext, (uint64)etext, PTE_R | PTE_W) != 0)
+        panic ("prok_pagetable:etext");
+    if (mappages(ukpgtbl, TRAPFRAME, PGSIZE, (uint64)(proc->trapframe), PTE_R | PTE_W) != 0)
+        panic("prok_pagetable:trapframe");
+    if (mappages(ukpgtbl, TRAMPOLINE, PGSIZE, (uint64)trampoline, PTE_R|PTE_X) != 0)
+        panic("prok_pagetable:TRAMPOLINE");
+    return ukpgtbl;
+}
+
+
 
 // a user program that calls exec("/init")
 // od -t xC initcode
