@@ -246,7 +246,21 @@ pork_pagetable(struct proc *proc)
     return ukpgtbl;
 }
 
-
+void 
+prok_freepagetable(pagetable_t pagetable)
+{
+    for (int i = 0; i < 512; i++){
+        pte_t pte = pagetable[i];
+        if (PTE_FLAGS(pte) == PTE_V){
+            prok_freepagetable((pagetable_t)PTE2PA(pte));
+            pagetable[i] = 0;
+        }
+        else if (pte & PTE_V){
+            pagetable[i] = 0;
+        }
+    }
+    kfree(pagetable);
+}
 
 // a user program that calls exec("/init")
 // od -t xC initcode
