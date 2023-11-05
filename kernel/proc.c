@@ -223,7 +223,7 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
 // create a user kernel pagetable
 // return the address of it
 pagetable_t 
-pork_pagetable(struct proc *proc)
+prok_pagetable(struct proc *proc)
 {
     extern char etext[];
     pagetable_t ukpgtbl = uvmcreate();
