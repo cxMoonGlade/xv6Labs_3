@@ -403,6 +403,7 @@ vmprint(pagetable_t pgtbl)
         if (!((pte = pgtbl[i]) & PTE_V)) continue;
 
         pagetable_t tbl1 = (pagetable_t)PTE2PA(pte);
+        printf("..%d: pte %p pa %p\n", i, pte, pgtbl);
         for (int j = 0; j < 512; j++){
             if (!((pte = tbl1[j]) & PTE_V)) continue;
             pagetable_t tbl2 = (pagetable_t)PTE2PA(pte);
