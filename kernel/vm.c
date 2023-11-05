@@ -429,3 +429,10 @@ copy_mappings(pagetable_t old, pagetable_t new, uint64 start, uint64 end)
         *dst = *src & (~PTE_U);
     }
 }
+
+void
+free_mappings(pagetable_t tbl, uint64 start, uint64 end){
+    if (start > end) return;
+    uint64 np = (PGROUNDUP(end) - PGROUNDUP(start)) / PGSIZE;
+    uvmunmap(tbl, PGROUNDUP(start), np, 0);
+}
