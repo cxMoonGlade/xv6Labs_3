@@ -22,4 +22,4 @@ Q: When running in user mode, could the process read/write the memory mapped by 
 A:  If page 1 serves as the guard page, the process cannot read/write the memory mapped by page 1.
 
 Q: Explain why the third test `srcva + len < srcva` is necessary in `copyin_new()`: give values for srcva and len for which the first two test fail (i.e., they will not cause to return -1) but for which the third one is true (resulting in returning -1).
-A: Stack Overflow.
+A: to check if any naming error or Overflow
