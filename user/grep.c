@@ -102,4 +102,3 @@ int matchstar(int c, char *re, char *text)
   }while(*text!='\0' && (*text++==c || c=='.'));
   return 0;
 }
-
