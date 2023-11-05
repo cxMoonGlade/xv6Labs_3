@@ -1,0 +1,25 @@
+Q: Explain the output of vmprint in terms of Fig 3-4 from the text.
+
+A: This is my output from xv6.out.pteprint
+----------------------------------------------------------------
+page table 0x0000000087f25000
+..0: pte 0x0000000021fc8401 pa 0x0000000087f21000
+.. ..0: pte 0x0000000021fc8001 pa 0x0000000087f20000
+.. .. ..0: pte 0x0000000021fc881f pa 0x0000000087f22000
+.. .. ..1: pte 0x0000000021fc7c0f pa 0x0000000087f1f000
+.. .. ..2: pte 0x0000000021fc781f pa 0x0000000087f1e000
+..255: pte 0x0000000021fc9001 pa 0x0000000087f24000
+.. ..511: pte 0x0000000021fc8c01 pa 0x0000000087f23000
+.. .. ..510: pte 0x0000000021fdd807 pa 0x0000000087f76000
+.. .. ..511: pte 0x0000000020001c0b pa 0x0000000080007000
+----------------------------------------------------------------
+
+Q: What does page 0 contain? What is in page 2?
+A: The page 0 contains the text and data from executable files
+The page 2 is the stac 
+
+Q: When running in user mode, could the process read/write the memory mapped by page 1?
+A:  If page 1 serves as the guard page, the process cannot read/write the memory mapped by page 1.
+
+Q: Explain why the third test `srcva + len < srcva` is necessary in `copyin_new()`: give values for srcva and len for which the first two test fail (i.e., they will not cause to return -1) but for which the third one is true (resulting in returning -1).
+A: Stack Overflow.
