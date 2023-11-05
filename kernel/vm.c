@@ -392,3 +392,26 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
   return copyinstr_new(pagetable, dst, srcva, max);
 }
 
+// print out all requirements
+// all valid ptes, corresponding physical addresses
+void
+vmprint(pagetable_t pgtbl)
+{
+    printf("page table %p\n", pgtbl);
+    pte_t pte;
+    for (int i = 0; i < 512; i++){
+        if (!((pte = pgtbl[i]) & PTE_V)) continue;
+
+        pagetable_t tbl1 = (pagetable_t)PTE2PA(pte);
+        for (int j = 0; j < 512; j++){
+            if (!((pte = tbl1[j]) & PTE_V)) continue;
+            pagetable_t tbl2 = (pagetable_t)PTE2PA(pte);
+            printf(".. ..%d: pte %p pa %p\n", j, pte, tbl2);
+            for (int k = 0; k < 512; k++){
+                if (!((pte = tbl2[k]) & PTE_V)) continue;
+                printf(".. .. ..%d: pte %p pa %p\n", k, pte, PTE2PA(pte));
+            }
+        }
+    }
+}
+
