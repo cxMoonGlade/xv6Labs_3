@@ -93,7 +93,7 @@ int             growproc(int);
 pagetable_t     proc_pagetable(struct proc *);
 void            proc_freepagetable(pagetable_t, uint64);
 pagetable_t     prok_pagetable(struct proc *);   // for kernel
-void            pork_freepagetable(pagetable_t); // for kernel
+void            prok_freepagetable(pagetable_t); // for kernel
 int             kill(int);
 struct cpu*     mycpu(void);
 struct cpu*     getmycpu(void);

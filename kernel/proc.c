@@ -145,14 +145,6 @@ found:
   p->context.sp = p -> kstack + PGSIZE;
 
   return p;
-
-  // Set up new context to start executing at forkret,
-  // which returns to user space.
-  memset(&p->context, 0, sizeof(p->context));
-  p->context.ra = (uint64)forkret;
-  p->context.sp = p->kstack + PGSIZE;
-
-  return p;
 }
 
 // free a proc structure and the data hanging from it,
@@ -167,6 +159,9 @@ freeproc(struct proc *p)
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
   p->pagetable = 0;
+  if (p->kernel_pgtbl)
+    prok_freepagetable(p->kernel_pgtbl);
+  p->kernel_pgtbl = 0;
   p->sz = 0;
   p->pid = 0;
   p->parent = 0;
