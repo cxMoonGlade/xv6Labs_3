@@ -220,26 +220,25 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
 pagetable_t 
 prok_pagetable(struct proc *proc)
 {
-    extern char etext[];
-    pagetable_t ukpgtbl = uvmcreate();
-
-    // code logic form vm.c
-    if (ukpgtbl == 0) return 0;
-    if (mappages(ukpgtbl, UART0, PGSIZE,  UART0, PTE_R | PTE_W) != 0) 
-        panic("prok_pagetable:UART0");
-    if (mappages(ukpgtbl, VIRTIO0, PGSIZE, VIRTIO0, PTE_R | PTE_W) != 0)
-        panic ("prok_pagetable:VIRTIO0");
-    if (mappages(ukpgtbl, PLIC, 0x400000, PLIC, PTE_R | PTE_W) != 0)
-        panic ("prok_pagetable:PLIC");
-    if (mappages(ukpgtbl, KERNBASE, (uint64)etext - KERNBASE, KERNBASE, PTE_R | PTE_X) != 0)
-        panic ("prok_pagetable:KERNELBASE");
-    if (mappages(ukpgtbl, (uint64)etext, PHYSTOP - (uint64)etext, (uint64)etext, PTE_R | PTE_W) != 0)
-        panic ("prok_pagetable:etext");
-    if (mappages(ukpgtbl, TRAPFRAME, PGSIZE, (uint64)(proc->trapframe), PTE_R | PTE_W) != 0)
-        panic("prok_pagetable:trapframe");
-    if (mappages(ukpgtbl, TRAMPOLINE, PGSIZE, (uint64)trampoline, PTE_R|PTE_X) != 0)
-        panic("prok_pagetable:TRAMPOLINE");
-    return ukpgtbl;
+  extern char etext[];
+  pagetable_t ukpgtbl = uvmcreate();
+  
+  if(ukpgtbl == 0) return 0;
+  if(mappages(ukpgtbl, UART0, PGSIZE, UART0, PTE_R | PTE_W) != 0) 
+    panic("prok_pagetable:UART0");
+  if(mappages(ukpgtbl, VIRTIO0, PGSIZE, VIRTIO0, PTE_R | PTE_W) != 0) 
+    panic("prok_pagetable:VIRTIO0");
+  if(mappages(ukpgtbl, PLIC, 0x400000, PLIC, PTE_R | PTE_W) != 0) 
+    panic("prok_pagetable:PLIC");
+  if(mappages(ukpgtbl, KERNBASE, (uint64)etext-KERNBASE, KERNBASE, PTE_R | PTE_X) != 0) 
+    panic("prok_pagetable:KERNELBASE");
+  if(mappages(ukpgtbl, (uint64)etext, PHYSTOP-(uint64)etext, (uint64)etext, PTE_R | PTE_W) != 0)
+    panic("prok_pagetable:etext");
+  if(mappages(ukpgtbl, TRAPFRAME, PGSIZE, (uint64)(proc->trapframe), PTE_R | PTE_W) < 0)
+    panic("prok_pagetable:trapframe");
+  if(mappages(ukpgtbl, TRAMPOLINE, PGSIZE, (uint64)trampoline, PTE_R | PTE_X) != 0) 
+    panic("prok_pagetable:TRAMPOLINE");
+  return ukpgtbl;
 }
 
 void 
@@ -247,6 +246,7 @@ prok_freepagetable(pagetable_t pagetable)
 {
     for (int i = 0; i < 512; i++){
         pte_t pte = pagetable[i];
+        // points to a lower lvl pagetable
         if (PTE_FLAGS(pte) == PTE_V){
             prok_freepagetable((pagetable_t)PTE2PA(pte));
             pagetable[i] = 0;
@@ -314,7 +314,7 @@ growproc(int n)
     }
     copy_mappings(p->pagetable, p->kernel_pgtbl, p->sz, sz);
   } else if(n < 0){
-    // ok, before it updates the sz, we save it into the kernel_pgtbl
+    // the caller failed to grow the process, we revert the fields
     free_mappings(p->kernel_pgtbl, sz + n, sz);
     sz = uvmdealloc(p->pagetable, sz, sz + n);
   }
@@ -347,7 +347,7 @@ fork(void)
 
   np->parent = p;
   
- copy_mappings(np -> pagetable, np -> kernel_pgtbl, 0, p->sz);
+  copy_mappings(np -> pagetable, np -> kernel_pgtbl, 0, p->sz);
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
