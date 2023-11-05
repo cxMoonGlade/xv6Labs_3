@@ -549,6 +549,8 @@ scheduler(void)
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
+        w_satp(MAKE_SATP(p->kernel_pgtbl));
+        sfence_vma();
         swtch(&c->context, &p->context);
 
         // Process is done running for now.
@@ -556,6 +558,16 @@ scheduler(void)
         c->proc = 0;
 
         found = 1;
+        // if doesn't work, 
+        // "kernel_pagetable" should be used the 
+        // following uncommented code is short 
+        // for:
+        // w_satp(MAKE_SATP(kernel_pagetable));
+        // sfence_vma();
+        // while "kernel_pagetable" is not valid
+        // If you want to use "kernel_pagetable",
+        // add extern pagetable_t kernel_pagetable properly.
+        kvminithart();
       }
       release(&p->lock);
     }
