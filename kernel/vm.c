@@ -415,3 +415,17 @@ vmprint(pagetable_t pgtbl)
     }
 }
 
+void 
+copy_mappings(pagetable_t old, pagetable_t new, uint64 start, uint64 end)
+{
+    pte_t *src, *dst;
+
+    if (start > end) return;
+    for (start = PGROUNDDOWN(start); start < end; start += PGSIZE){
+        if ((src = walk(old, start, 0)) == 0)
+            panic("copy_mappings:pte must exists");
+        if ((dst = walk(new, start, 1)) == 0)
+            panic("copy_mappings:out of memory");
+        *dst = *src & (~PTE_U);
+    }
+}
