@@ -332,7 +332,7 @@ int
 fork(void)
 {
   int i, pid;
-  struct proc *np;
+  struct proc *np; // new process, child
   struct proc *p = myproc();
 
   // Allocate process.
@@ -342,13 +342,16 @@ fork(void)
 
   // Copy user memory from parent to child.
   if(uvmcopy(p->pagetable, np->pagetable, p->sz) < 0){
-    freeproc(np);
+    // failed to copy
+    freeproc(np); 
     release(&np->lock);
     return -1;
   }
   np->sz = p->sz;
 
   np->parent = p;
+  
+ copy_mappings(np -> pagetable, np -> kernel_pgtbl, 0, p->sz);
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
