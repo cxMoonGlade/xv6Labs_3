@@ -228,6 +228,7 @@ pork_pagetable(struct proc *proc)
     extern char etext[];
     pagetable_t ukpgtbl = uvmcreate();
 
+    // code logic form vm.c
     if (ukpgtbl == 0) return 0;
     if (mappages(ukpgtbl, UART0, PGSIZE,  UART0, PTE_R | PTE_W) != 0) 
         panic("prok_pagetable:UART0");
