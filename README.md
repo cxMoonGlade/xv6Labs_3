@@ -1,4 +1,4 @@
-Welcome to our repo. This is a record of our step-by-step work on the 
+Welcome to my repo. This is a record of a step-by-step work on the 
 MIT 6.S081 2020 Course, based on the original MIT repository.
 
 
