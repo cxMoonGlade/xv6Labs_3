@@ -71,9 +71,10 @@ void usertrap(void)
         {
             // timer interrupt && has called sys_sigalarm
             p->tickspassed += 1;
-            if (p->tickspassed == p->ticks)
-            {
+             if(!p->handling && p->tickspassed >= p->ticks) {
+                memmove(p->trapframebak, p->trapframe, sizeof(struct trapframe));
                 p->tickspassed = 0;
+                p->handling = 1;
                 p->trapframe->epc = p->handler;
             }
         }
