@@ -1,0 +1,17 @@
+Q1: thread_switch needs to save/restore only the callee-save registers. Why?
+A1: When a function (the caller) calls another function (the callee), it must save the contents of caller-save registers if it plans to use them again after the function returns. This is because the callee might overwrite these registers. Caller-save registers are typically used for temporary variables that need not be preserved across function calls.
+
+Q2:  Why are there missing keys with 2 threads, but not with 1 thread? Identify a sequence of events with 2 threads that can lead to a key being missing.
+A2: More than 1 thread working on the same memory location may not lead to a key being missing if these threads only do read operations. However, if one thread is doing write operations, this multi-thread mini system will not be able to keep the thread-safety anymore. Because our non-atomic write operations cannot scynchronous between threads. Sequence in insert leading to key being missing is shown below:
+
+```c
+static void
+insert(int key, int value, struct entry **p, struct entry *n)
+{
+  ...
+  e->key = key;
+  e->value = value;
+  e->next = n;
+  *p = e;
+}
+```
