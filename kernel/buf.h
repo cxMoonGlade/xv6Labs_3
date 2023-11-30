@@ -1,3 +1,6 @@
+#define NBUCKET 13
+#define hashid(key) ((key)%NBUCKET)
+
 struct buf {
   int valid;   // has data been read from disk?
   int disk;    // does disk "own" buf?
