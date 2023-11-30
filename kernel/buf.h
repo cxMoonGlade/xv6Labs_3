@@ -1,5 +1,5 @@
 #define NBUCKET 13
-#define hashid(key) ((key)%NBUCKET)
+#define hashid(key) ((key * key)%NBUCKET)
 
 struct buf {
   int valid;   // has data been read from disk?
