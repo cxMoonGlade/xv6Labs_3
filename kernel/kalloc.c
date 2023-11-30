@@ -119,5 +119,5 @@ kalloc(void){
 
     if (r)
     memset((char *)r, 5, PGSIZE);
-    return (void *);
+    return (void *)r;
 }
